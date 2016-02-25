@@ -1,4 +1,4 @@
-<component name="org.nuxeo.webpage.archiver.operations">
+<component name="org.nuxeo.webpage.archiver.WebpageToPdfOp">
 
   <extension target="org.nuxeo.ecm.core.operation.OperationServiceComponent"
     point="operations" >

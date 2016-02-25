@@ -20,22 +20,16 @@ package org.nuxeo.webpage.archiver;
 import java.io.IOException;
 
 import org.nuxeo.ecm.automation.core.Constants;
-import org.nuxeo.ecm.automation.core.annotations.Context;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.automation.core.collectors.DocumentModelCollector;
-import org.nuxeo.ecm.automation.core.collectors.BlobCollector;
 import org.nuxeo.ecm.core.api.Blob;
-import org.nuxeo.ecm.core.api.CoreSession;
-import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.DocumentRef;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 
 /**
  * 
  */
-@Operation(id=WebpageToPdfOp.ID, category=Constants.CAT_CONVERSION, label="Webpage to PDF", description="Use mkhtmltopdf command line (must be installed) to render build a pdf of the distant webpage. If fileName is not used, a default name will apply.")
+@Operation(id=WebpageToPdfOp.ID, category=Constants.CAT_CONVERSION, label="Webpage to PDF", description="")
 public class WebpageToPdfOp {
 
     public static final String ID = "WebpageToPdf";
@@ -50,6 +44,6 @@ public class WebpageToPdfOp {
     public Blob run() throws IOException, CommandNotAvailable {
       
         return WebpageToBlob.toPdf(url, fileName);
-    }    
+    } 
 
 }

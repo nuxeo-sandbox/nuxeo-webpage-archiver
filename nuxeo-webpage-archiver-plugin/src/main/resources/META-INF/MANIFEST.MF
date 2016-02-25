@@ -7,5 +7,6 @@ Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Bundle-ManifestVersion: 2
 Bundle-Vendor: Nuxeo
-Nuxeo-Component: OSGI-INF/commandlines.xml,OSGI-INF/operations.xml
+Nuxeo-Component: OSGI-INF/commandlines.xml,OSGI-INF/extensions/org.nux
+ eo.webpage.archiver.WebpageToPdfOp.xml
 
