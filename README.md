@@ -7,6 +7,11 @@ _()Work in Progress)_
     cd /path/to/nuxeo-webpage-archiver
     mvn clean install    
 
+*NOTE* As of today, unit test are OK in Eclipse, not in Maven. So better run:
+
+    cd /path/to/nuxeo-webpage-archiver
+    mvn clean install -DskipTests 
+
 
 ## License
 (C) Copyright 2015 Nuxeo SA (http://nuxeo.com/) and others.
