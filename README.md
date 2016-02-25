@@ -1,6 +1,11 @@
 # nuxeo-webpage-archiver
 
-_()Work in Progress)_
+Given a URL to a web page, the plugin builds a pdf from this webpage.
+
+### IMPORTANT
+
+The plug-in requires the `wkhtmltopdf` command line tool to be installed on your server. Please visit [http://wkhtmltopdf.org](http://wkhtmltopdf.org).
+
 
 ### Build
 
