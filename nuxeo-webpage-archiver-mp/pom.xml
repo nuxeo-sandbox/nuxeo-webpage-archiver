@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>nuxeo-webpage-archiver</groupId>
+    <artifactId>nuxeo-webpage-archiver-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <groupId>nuxeo-webpage-archiver</groupId>
+  <artifactId>nuxeo-webpage-archiver-mp</artifactId>
+  <packaging>zip</packaging>
+  <name>Market Place Package for Nuxeo webpage-archiver</name>
+  <description/>
+  <dependencyManagement>
+    <dependencies>
+      <!-- Import Nuxeo BOM -->
+      <dependency>
+        <groupId>org.nuxeo.ecm.distribution</groupId>
+        <artifactId>nuxeo-distribution</artifactId>
+        <version>${nuxeo.distribution.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <!-- Base distribution(s) for the MP -->
+    <dependency>
+      <groupId>org.nuxeo.ecm.distribution</groupId>
+      <artifactId>nuxeo-distribution-cap</artifactId>
+      <!-- <artifactId>nuxeo-distribution-coreserver</artifactId> -->
+      <!-- <artifactId>nuxeo-distribution-dm</artifactId> -->
+      <!-- <artifactId>nuxeo-distribution-dam</artifactId> -->
+      <!-- <artifactId>nuxeo-distribution-social-collaboration</artifactId> -->
+      <type>pom</type>
+    </dependency>
+
+    <!-- Additional bundles to be deployed by the MP -->
+    <dependency>
+      <groupId>nuxeo-webpage-archiver</groupId>
+      <artifactId>nuxeo-webpage-archiver-plugin</artifactId>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.nuxeo.build</groupId>
+        <artifactId>ant-assembly-maven-plugin</artifactId>
+        <configuration>
+          <buildFile>${basedir}/src/main/assemble/assembly.xml</buildFile>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
