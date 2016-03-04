@@ -14,6 +14,7 @@
  * Contributors:
  *     Thibaud Arguillere
  */
+
 package org.nuxeo.webpage.archiver;
 
 import java.io.IOException;
@@ -22,21 +23,23 @@ import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
 import org.nuxeo.ecm.automation.core.annotations.Param;
-import org.nuxeo.ecm.core.api.Blob;
+import org.nuxeo.ecm.core.api.DocumentModel;
+import org.nuxeo.ecm.core.work.api.WorkManager;
+import org.nuxeo.ecm.core.work.api.WorkManager.Scheduling;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
+import org.nuxeo.runtime.api.Framework;
 
 /**
- * Convert a distant URL to PDF? Returns the blob. WARNING: This runs synchronously. If the conversion takes time, caller
- * will have to wait.
+ * Asynchronously converts a URL to PDF, and stores the PDF in the input Document
  * <p>
  * Please, see the comments of {@link WebpageToBlob} for details about the usage of the wkhtmltopdf commandline
  * 
  * @since 7.10
  */
-@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. WARNING: This is a synchronous operation. If the wkhtmltopdf command line locks or takes time, caller may wait.")
-public class WebpageToPdfOp {
+@Operation(id=WebpageToDocumentOp.ID, category=Constants.CAT_CONVERSION, label="Webpage to Document", description="Read the distant web page and save it as a pdf in the xpath field of input document. This is always an asynchronous operation running in a worker. When it is done, it fires the webpageArchived event. Returns the input document (unchanged)")
+public class WebpageToDocumentOp {
 
-    public static final String ID = "WebpageToPdf";
+    public static final String ID = "WebpageToDocument";
 
     @Param(name = "url", required = true)
     protected String url;
@@ -44,10 +47,17 @@ public class WebpageToPdfOp {
     @Param(name = "fileName", required = false)
     protected String fileName;
 
-    @OperationMethod
-    public Blob run() throws IOException, CommandNotAvailable {
+    @Param(name = "xpath", required = false, values = { "file:content" })
+    protected String xpath = "file:content";
 
-        return WebpageToBlob.toPdf(url, fileName);
-    }
+    @OperationMethod
+    public DocumentModel run(DocumentModel inDoc) throws IOException, CommandNotAvailable {
+        
+        WebpageToBlobWork work = new WebpageToBlobWork(url, inDoc.getRepositoryName(), inDoc.getId(), xpath, fileName);
+        WorkManager workManager = Framework.getLocalService(WorkManager.class);
+        workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
+      
+        return inDoc;
+    } 
 
 }

@@ -20,12 +20,19 @@ import static org.junit.Assert.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.Assume;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nuxeo.ecm.automation.test.AutomationFeature;
+import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.test.CoreFeature;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
+import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
+import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -36,20 +43,31 @@ import org.nuxeo.webpage.archiver.WebpageToBlob;
  * @since 7.10HF05
  */
 @RunWith(FeaturesRunner.class)
-@Features({ PlatformFeature.class, CoreFeature.class })
+@Features({ AutomationFeature.class })
 @Deploy({ "nuxeo-webpage-archiver", "org.nuxeo.ecm.platform.commandline.executor" })
 public class TestWebpageArchiver {
     
     protected static final Log log = LogFactory.getLog(TestWebpageArchiver.class);
+
+    @Before
+    public void setUp() {
+    }
+
+    @After
+    public void cleanup() {
+
+    }
     
     @Test
-    public void testUrlToImage() throws Exception {
+    public void testUrlToPdf() throws Exception {
+        
+        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
+        CommandAvailability ca = cles.getCommandAvailability(WebpageToBlob.COMMANDLINE_wkhtmltopdf);
+        Assume.assumeTrue("wkhtmltopdf is not available, skipping test", ca.isAvailable());
         
         Blob result = null;
-        
-        //result = WebpageToBlob.toPdf("http://nuxeo.com", "thepage.pdf");
-        result = WebpageToBlob.toPdf("http://www.nuxeo.com/services/training/", null);
-        assertNull(result);
+        result = WebpageToBlob.toPdf("https://en.wikipedia.org/wiki/Unit_testing", null);
+        assertNotNull(result);
     }
 
 }

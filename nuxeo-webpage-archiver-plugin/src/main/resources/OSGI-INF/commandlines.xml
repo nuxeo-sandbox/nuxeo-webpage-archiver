@@ -8,8 +8,8 @@
 
 		<command name="wkhtmlToPdf" enabled="true">
 			<commandLine>wkhtmltopdf</commandLine>
-			<parameterString>#{url} #{targetFilePath}</parameterString>
-			<installationDirective>You need to install wkhtmltoimage.
+			<parameterString>-q --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
+			<installationDirective>You need to install wkhtmltopdf.
 			</installationDirective>
 		</command>
 

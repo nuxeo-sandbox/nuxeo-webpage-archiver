@@ -1,0 +1,11 @@
+<component name="org.nuxeo.webpage.archiver.works">
+
+	<extension target="org.nuxeo.ecm.core.work.service" point="queues">
+		<queue id="webpageToBlob">
+			<!-- Let the default values for maxThreads and capacity <maxThreads>1</maxThreads> -->
+			<category>webpageToBlob</category>
+		</queue>
+	</extension>
+
+</component>
+
