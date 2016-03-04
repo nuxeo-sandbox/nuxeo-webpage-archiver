@@ -162,7 +162,7 @@ To use the operations in your project, you must add their definitions to the "Au
 ### Limitations
 
 * The plug-in requires the `wkhtmltopdf` command line tool to be installed on your server. Please visit [http://wkhtmltopdf.org](http://wkhtmltopdf.org).
-* The plug-in does not handle authtentication. The URL must be able to be loaded with no authentication.
+* The plug-in does not handle authentication. The URL must be able to be loaded with no authentication.
 * Some webpages can be complicated, with complex css, can contain errors, etc. To avoid the command line to block and, possibly, freeze, it is used with options forcing it to ignore errors (see OSGI-INF/commandLInes.xml), such as
 `--load-media-error-handling ignore` and `--load-error-handling ignore</code>`.
 
