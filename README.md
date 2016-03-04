@@ -2,7 +2,9 @@
 
 Given a URL to a web page, the plugin builds a pdf from this webpage.
 
-If the PDF is then saved in a document, you benefit of all the default features of Nuxeo: Full text extraction, Thumbnail, Preview...
+If the PDF is then saved in a document, you benefit of all the default features of Nuxeo: Full text extraction, Thumbnail, Preview... For example, the following screenshot shows the thumbnail and the PDF preview after building a pdf from the URL "https://en.wikipedia.org/wiki/Status_Quo_(band)":
+
+<img src="doc-img/webpage-archiver-example.png">
 
 * [Operations](#operations)
 * [Examples](#examples)
