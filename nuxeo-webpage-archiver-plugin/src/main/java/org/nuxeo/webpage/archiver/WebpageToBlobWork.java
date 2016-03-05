@@ -33,7 +33,6 @@ import org.nuxeo.ecm.core.event.EventService;
 import org.nuxeo.ecm.core.event.impl.DocumentEventContext;
 import org.nuxeo.ecm.core.work.AbstractWork;
 import org.nuxeo.ecm.core.work.api.WorkManager;
-import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -61,18 +60,21 @@ public class WebpageToBlobWork extends AbstractWork {
     protected String fileName;
 
     protected String xpath;
+    
+    protected int timeout;
 
     protected static String computeIdPrefix(String repoName, String inDocId, String inUrl) {
         return repoName + ":" + inDocId + ":" + inUrl;
     }
 
-    public WebpageToBlobWork(String inUrl, String repoName, String inDocId, String inXPath, String inFileName) {
+    public WebpageToBlobWork(String inUrl, String repoName, String inDocId, String inXPath, String inFileName, int inTimeout) {
         super(computeIdPrefix(repoName, inDocId, inUrl));
         setDocument(repoName, inDocId);
 
         url = inUrl;
         xpath = inXPath;
         fileName = inFileName;
+        timeout = inTimeout;
     }
 
     @Override
@@ -87,9 +89,10 @@ public class WebpageToBlobWork extends AbstractWork {
         for (i = 1; i <= max; ++i) {
             try {
                 initSession(); // IN 8.1, USE openSystemSession() instead
-                pdf = WebpageToBlob.toPdf(url, fileName);
+                WebpageToBlob wptopdf = new WebpageToBlob(timeout);
+                pdf = wptopdf.toPdf(url, fileName);
                 commitOrRollbackTransaction();
-            } catch (IOException | CommandNotAvailable | NuxeoException e) {
+            } catch (IOException | NuxeoException e) {
                 log.error("Attempt " + i + "/" + max + ": Failed to convert the \"" + url + "\" to pdf", e);
                 pdf = null;
             } finally {

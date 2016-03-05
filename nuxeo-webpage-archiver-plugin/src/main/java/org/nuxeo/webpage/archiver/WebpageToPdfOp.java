@@ -26,14 +26,14 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 
 /**
- * Convert a distant URL to PDF? Returns the blob. WARNING: This runs synchronously. If the conversion takes time, caller
- * will have to wait.
+ * Convert a distant URL to PDF? Returns the blob. WARNING: This runs synchronously. If the conversion takes time,
+ * caller will have to wait.
  * <p>
  * Please, see the comments of {@link WebpageToBlob} for details about the usage of the wkhtmltopdf commandline
  * 
  * @since 7.10
  */
-@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. WARNING: This is a synchronous operation. If the wkhtmltopdf command line locks or takes time, caller may wait.")
+@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. WARNING: This is a synchronous operation. If the wkhtmltopdf command line locks or takes time, caller may wait for the timout (default is 30000ms)")
 public class WebpageToPdfOp {
 
     public static final String ID = "WebpageToPdf";
@@ -44,10 +44,14 @@ public class WebpageToPdfOp {
     @Param(name = "fileName", required = false)
     protected String fileName;
 
+    @Param(name = "timeoutMilliSecs", required = false)
+    protected long timeoutMilliSecs = WebpageToBlob.TIMEOUT_DEFAULT;
+
     @OperationMethod
     public Blob run() throws IOException, CommandNotAvailable {
 
-        return WebpageToBlob.toPdf(url, fileName);
+        WebpageToBlob wptopdf = new WebpageToBlob((int) timeoutMilliSecs);
+        return wptopdf.toPdf(url, fileName);
     }
 
 }

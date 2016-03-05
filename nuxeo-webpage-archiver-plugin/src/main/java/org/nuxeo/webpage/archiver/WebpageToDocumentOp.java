@@ -36,7 +36,7 @@ import org.nuxeo.runtime.api.Framework;
  * 
  * @since 7.10
  */
-@Operation(id=WebpageToDocumentOp.ID, category=Constants.CAT_CONVERSION, label="Webpage to Document", description="Read the distant web page and save it as a pdf in the xpath field of input document. This is always an asynchronous operation running in a worker. When it is done, it fires the webpageArchived event. Returns the input document (unchanged)")
+@Operation(id = WebpageToDocumentOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Document", description = "Read the distant web page and save it as a pdf in the xpath field of input document. This is always an asynchronous operation running in a worker. When it is done, it fires the webpageArchived event. Returns the input document (unchanged)")
 public class WebpageToDocumentOp {
 
     public static final String ID = "WebpageToDocument";
@@ -50,14 +50,18 @@ public class WebpageToDocumentOp {
     @Param(name = "xpath", required = false, values = { "file:content" })
     protected String xpath = "file:content";
 
+    @Param(name = "timeoutMilliSecs", required = false)
+    protected long timeoutMilliSecs = WebpageToBlob.TIMEOUT_DEFAULT;
+
     @OperationMethod
     public DocumentModel run(DocumentModel inDoc) throws IOException, CommandNotAvailable {
-        
-        WebpageToBlobWork work = new WebpageToBlobWork(url, inDoc.getRepositoryName(), inDoc.getId(), xpath, fileName);
+
+        WebpageToBlobWork work = new WebpageToBlobWork(url, inDoc.getRepositoryName(), inDoc.getId(), xpath, fileName,
+                (int) timeoutMilliSecs);
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
-      
+
         return inDoc;
-    } 
+    }
 
 }

@@ -24,6 +24,7 @@ The plug-in provides the following operations:
   * _Parameters_:
     * `url`: The url to use. Full URL with protocol, required
     * `fileName`: The file name for the pdf. Optional. A name built from the host in the URL is provided by default (`"http://my.site.com/more/and/more/page.html"` => `my-site-com.pdf`).
+    * `timeoutMilliSecs`: Timeout for execution. If execution is longer than this time out, the wkhtmltopdf process is quit and the operation returns `null`. Default value is 30000 (30 seconds)
   * This operation runs _synchronously_.
 
 * `Conversion > Webpage to Document` (id `WebpageToDocument`)
@@ -33,7 +34,8 @@ The plug-in provides the following operations:
     * `url`: The url to use. Full URL with protocol, required
     * `fileName`: The file name for the pdf. Optional. A name built from the host in the URL is provided by default (`"http://my.site.com/more/and/more/page.html"` => `my-site-com.pdf`).
     * `xpath`: The xpath to use to store the blob. Optional (`file:content` by default)
-  * This operation runs **a**_synchronously_, and returns immediately the same document. It does the extraction/PDF-building in an asynchronous worker, and when the conversion is done, it stores the resulting PDF in the `xpath` field and send the `webpageArchived` event (so you can install a listener for this event and be notified once the PDF was generated and stored in the Document)
+    *  `timeoutMilliSecs`: Timeout for execution. If execution is longer than this time out, the wkhtmltopdf process is quit. Default value is 30000 (30 seconds)
+  * This operation runs **a**_synchronously_, and returns immediately the same document. It does the extraction/PDF-building in an asynchronous worker, and when the conversion is done, it stores the resulting PDF in the `xpath` field and send the `webpageArchived` event (so you can install a listener for this event and be notified once the PDF was generated and stored in the Document). In the worker, 3 attempts are made to build the pdf in case of failure (timout, other error, ...)
 
 ### Examples
 
