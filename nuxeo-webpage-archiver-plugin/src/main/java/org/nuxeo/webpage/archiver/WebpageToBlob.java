@@ -43,10 +43,13 @@ import org.nuxeo.runtime.api.Framework;
  * installed on your server.
  * <p>
  * <b>Important</b>: Some webpages can be complicated, can contain errors, etc. To avoid the commandline to block and
- * freeze, it is used with options forcing it to ignore errors (see OSGI-INF/commandLInes.xml), such as
+ * freeze, it is used with options forcing it to ignore errors (see OSGI-INF/commandLines.xml), such as
  * <code>--load-media-error-handling ignore</code> and <code>--load-error-handling ignore</code>.
  * <p>
- * Despite these adjustements, the wkhtmltopdf command line can still freeze when an occurs (instead of quitting). This
+ * Also, the commandline can create a valid and complete pdf but still returns an error code. This class does not rely
+ * on the exitValue returned by wkhtmltopdf. Instead, it checks the resulting pdf.
+ * <p>
+ * Despite these adustements, the wkhtmltopdf command line can still freeze when an occurs (instead of quitting). This
  * means: The Nuxeo thread calling the command line also is blocked and never returns. The
  * <code>CommandLineExecutorService</code> does not handle a timeout, and it is not that straightforward to handle such
  * timeout in a cross platform way (at least Linux and Windows). This is why we use Apache Common Exec instead.
@@ -116,7 +119,7 @@ public class WebpageToBlob {
      * timeout, it is killed.
      * 
      * @param inUrl, the url to convert
-     * @param inFileName, the fileName of the final PDF. Optionnal.
+     * @param inFileName, the fileName of the final PDF. Optional.
      * @return a Blob holding the pdf
      * @throws IOException
      * @throws CommandNotAvailable
@@ -125,15 +128,74 @@ public class WebpageToBlob {
      */
     public Blob toPdf(String inUrl, String inFileName) throws IOException, NuxeoException {
 
-        Exception exception = null;
+        return toPdf(inUrl, inFileName, null);
+    }
+
+    public Blob toPdf(String inUrl, String inFileName, Blob inCookieJar) throws IOException, NuxeoException {
 
         Blob resultPdf = Blobs.createBlobWithExtension(".pdf");
 
-        String params = StringUtils.replace(parameterString, COMMANDLINE_PARAM_URL, inUrl);
+        String params = parameterString;
+
+        if (inCookieJar != null) {
+            params = "--cookie-jar \"" + inCookieJar.getFile().getAbsolutePath() + "\" " + params;
+        }
+
+        params = StringUtils.replace(params, COMMANDLINE_PARAM_URL, inUrl);
         params = StringUtils.replace(params, COMMANDLINE_PARAM_TARGET_FILE_PATH, resultPdf.getFile().getAbsolutePath());
 
         String line = "wkhtmltopdf " + params;
-        CommandLine cmdLine = CommandLine.parse(line);
+
+        resultPdf = run(line, resultPdf);
+
+        return resultPdf;
+    }
+
+    /**
+     * For inLoginInfo, see wkhtmltopdf documentation and this blog:
+     * http://test-mate.blogspot.com/2014/07/wkhtmltopdf-generate-pdf-of-password.html
+     * <p>
+     * Example: To access a page at http://my.url.com, you have a first login page. You must:
+     * <ul>
+     * <li>Get the info to be sent in --post values by wkhtmltopdf. WHich means, the variables sent in the form at the
+     * POST request.</li>
+     * <li>Add each of them to your inLoginInfo</li>
+     * </ul>
+     * So, say the form variables to send are "user-name", "user-pwd" and the submit button is "Submit", with a value of
+     * "doLogin". You will then pass:
+     * <p>
+     * "--post user_name THE_LOGIN --post user-pwd THE_PWD --post Submit doLogin"
+     * 
+     * @param inUrl
+     * @param inLoginInfo
+     * @return the cookie jar (as a Blob) to be used with the next authenticated calls.
+     * @throws IOException
+     * @since 7.10
+     */
+    public Blob login(String inUrl, String inLoginInfo) throws IOException {
+
+        Blob cookieJar = Blobs.createBlobWithExtension(".jar");
+        Blob ignorePdf = Blobs.createBlobWithExtension(".pdf");
+
+        String line = "wkhtmltopdf -q --cookie-jar \"" + cookieJar.getFile().getAbsolutePath() + "\"";
+        line += " " + inLoginInfo;
+        line += " \"" + inUrl + "\"";
+        line += " \"" + ignorePdf.getFile().getAbsolutePath() + "\"";
+
+        ignorePdf = run(line, ignorePdf);
+
+        return cookieJar;
+    }
+
+    /*
+     * Centralizes every call to wkhtmltopdf. See comments about failures and error codes inResultPdf must be the pdf
+     * used to get the result. Must exist.
+     */
+    protected Blob run(String inCommandLine, Blob inResultPdf) throws IOException, NuxeoException {
+
+        Exception exception = null;
+
+        CommandLine cmdLine = CommandLine.parse(inCommandLine);
 
         DefaultExecutor executor = new DefaultExecutor();
         ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
@@ -151,9 +213,9 @@ public class WebpageToBlob {
         // Exit value may be 1, or non zero while the pdf was created. But maybe
         // a font could not be correctly rendered, etc. Let's check if we have
         // something in the pdf
-        File tempDestFile = resultPdf.getFile();
+        File tempDestFile = inResultPdf.getFile();
         if (!pdfLooksValid(tempDestFile)) {
-            resultPdf = null;
+            inResultPdf = null;
             String msg = "Failed to execute the command line [" + cmdLine.toString()
                     + " ]. No valid PDF generated. exitValue: " + exitValue;
             if (exitValue == 143) { // On linux: Timeout, wkhtmltopdf was SIGTERM
@@ -166,21 +228,34 @@ public class WebpageToBlob {
             }
         }
 
-        return resultPdf;
+        return inResultPdf;
     }
 
+    /*
+     * This call is a bit expensive. But as we can't rely on the exitReturn value from wkhtmltopdf, not on just the size
+     * of the file, we must check the PDF looks ok. Using PDFBox here.
+     */
     protected boolean pdfLooksValid(File inPdf) {
 
         boolean valid = false;
 
         if (inPdf.exists() && inPdf.length() > 0) {
+            PDDocument pdfDoc = null;
             try {
-                PDDocument pdfDoc = PDDocument.load(inPdf);
+                pdfDoc = PDDocument.load(inPdf);
                 if (pdfDoc.getNumberOfPages() > 0) {
                     valid = true;
                 }
             } catch (IOException e) {
                 // Nothing
+            } finally {
+                if (pdfDoc != null) {
+                    try {
+                        pdfDoc.close();
+                    } catch (IOException e) {
+                        // Ignore
+                    }
+                }
             }
         }
 

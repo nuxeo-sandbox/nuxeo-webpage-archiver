@@ -24,3 +24,6 @@ target
 *cpJar*
 dependency-tree.log
 nashorn_code_cache
+
+# Specific to this plugin
+test-private.properties
