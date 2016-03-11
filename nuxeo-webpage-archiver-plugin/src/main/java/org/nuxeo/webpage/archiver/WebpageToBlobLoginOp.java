@@ -29,39 +29,24 @@ import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 
 /**
- * Convert a distant URL to PDF, returns the blob. WARNING: This runs <i>synchronously</i>. If the conversion takes
- * time, caller will have to wait.
- * <p>
- * If access to <code>url</code> must be authenticated, a previous call to WebpageToBlob.Login must have returned Blob,
- * to pass in the <code>cookieJar</code> parameter.
- * <p>
- * Please, see the comments of {@link WebpageToBlob} for details about the usage of the wkhtmltopdf command line
+ * Runs the commandLine which must declare everything needed to authenticated (see README). Returns a blob to use for
+ * further calls to the same site, accessing pages requesting authentication."
  * 
  * @since 7.10
  */
-@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. If the page requests authentication, a previous call to WebpageToBlob.Login must have returned the cookieJar blob.")
-public class WebpageToPdfOp {
+@Operation(id = WebpageToBlobLoginOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to PDF: Login", description = "Run the commandLine which must declare everything needed to authenticated (see README). Returns a blob to use for further calls to the same site, accessing pages requesting authentication.")
+public class WebpageToBlobLoginOp {
 
-    public static final String ID = "WebpageToPdf";
+    public static final String ID = "WebpageToBlob.Login";
 
-    @Param(name = "url", required = true)
-    protected String url;
-
-    @Param(name = "fileName", required = false)
-    protected String fileName;
-
-    @Param(name = "cookieJar", required = false)
-    protected Blob cookieJar;
+    @Param(name = "commandLine", required = true)
+    protected String commandLine;
 
     @OperationMethod
     public Blob run() throws IOException, CommandNotAvailable, NuxeoException {
 
-        String commandLine = null;
-        if(cookieJar != null) {
-            commandLine = "wkhtmlToPdf-authenticated";
-        }
         WebpageToBlob wptopdf = new WebpageToBlob();
-        return wptopdf.toPdf(commandLine, url, fileName, cookieJar);
+        return wptopdf.login(commandLine);
     }
 
 }

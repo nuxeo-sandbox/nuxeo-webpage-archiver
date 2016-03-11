@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>7.10</version>
+    <version>8.1</version>
   </parent>
   <groupId>nuxeo-webpage-archiver</groupId>
   <artifactId>nuxeo-webpage-archiver-parent</artifactId>
@@ -15,8 +15,8 @@
   <description />
   <properties>
     <nuxeo.webpage-archiver.version>${project.version}</nuxeo.webpage-archiver.version>
-    <nuxeo.version>7.10</nuxeo.version>
-    <nuxeo.distribution.version>7.10</nuxeo.distribution.version>
+    <nuxeo.version>8.1</nuxeo.version>
+    <nuxeo.distribution.version>8.1</nuxeo.distribution.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
   </properties>

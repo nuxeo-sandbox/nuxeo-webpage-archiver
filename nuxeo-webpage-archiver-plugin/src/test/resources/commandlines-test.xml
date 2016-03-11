@@ -1,0 +1,21 @@
+<component name="org.nuxeo.webpage.archiver.commandlines.test">
+
+	<require>org.nuxeo.ecm.platform.commandline.executor.service.defaultContrib
+	</require>
+	<extension
+		target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+		point="command">
+		<!-- Used by unit tests -->
+		<!-- You MUST have set private infos in the test-private.properties file (see README and JavaDoc) -->
+		<command name="wkhtmlToPdf-login-TEST" enabled="true">
+			<commandLine>wkhtmltopdf</commandLine>
+			<parameterString>-q --cookie-jar #{cookieJar} --post #{loginVar} #{loginValue} --post #{pwdVar} #{pwdValue} --post #{submitVar} #{submitValue} "#{url}" "#{targetFilePath}"</parameterString>
+			<installationDirective>You need to install wkhtmltopdf.
+			</installationDirective>
+		</command>
+		<!-- (2) Access your page, using the default wkhtmlToPdf-authenticated command -->
+
+	</extension>
+
+</component>
+

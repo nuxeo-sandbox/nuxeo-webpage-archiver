@@ -9,9 +9,29 @@
 		<command name="wkhtmlToPdf" enabled="true">
 			<commandLine>wkhtmltopdf</commandLine>
 			<parameterString>-q --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
+			<installationDirective>You need to install wkhtmltopdf</installationDirective>
+		</command>
+
+		<command name="wkhtmlToPdf-authenticated" enabled="true">
+			<commandLine>wkhtmltopdf</commandLine>
+			<parameterString>-q --cookie-jar #{cookieJar} --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
+			<installationDirective>You need to install wkhtmltopdf</installationDirective>
+		</command>
+		
+		<!-- Example of accessing a page requiring authentication (see README and JavaDoc for more details -->
+		<!-- (These are examples, not enabled) -->
+		<!-- (1) Access the login page:
+		           * URL of the login page MUST BE HARD CODED here
+		           * The cookie jar parameter must be set
+		           * You also need to use the #{targetFilePath} parameter
+		-->
+		<command name="wkhtmlToPdf-login-EXAMPLE" enabled="false">
+			<commandLine>wkhtmltopdf</commandLine>
+			<parameterString>-q --cookie-jar #{cookieJar} --post user_name johndoe --post user_pwd 123456 --post Submit doLogin --load-media-error-handling ignore --load-error-handling ignore "http://my.site.com/login" "#{targetFilePath}"</parameterString>
 			<installationDirective>You need to install wkhtmltopdf.
 			</installationDirective>
 		</command>
+		<!-- (2) Use the wkhtmlToPdf-authenticated command line -->
 
 	</extension>
 

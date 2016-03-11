@@ -4,6 +4,7 @@
 		point="operations">
 		<operation class="org.nuxeo.webpage.archiver.WebpageToDocumentOp" />
 		<operation class="org.nuxeo.webpage.archiver.WebpageToPdfOp" />
+		<operation class="org.nuxeo.webpage.archiver.WebpageToBlobLoginOp" />
 	</extension>
 
 </component>
