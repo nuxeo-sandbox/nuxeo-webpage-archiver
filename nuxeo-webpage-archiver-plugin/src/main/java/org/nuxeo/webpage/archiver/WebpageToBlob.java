@@ -20,9 +20,7 @@ package org.nuxeo.webpage.archiver;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.HashMap;
 import java.util.Properties;
 
 import org.apache.commons.lang.StringUtils;
@@ -37,8 +35,6 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
-import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
-import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent;
 import org.nuxeo.runtime.api.Framework;
 
 /**
