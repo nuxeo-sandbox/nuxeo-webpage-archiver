@@ -23,6 +23,10 @@ The plug-in provides the following operations:
   * _Input_: `void`
   * _Output_: A blob, the PDF corresponding to the webpage
   * _Parameters_:
+    * `commandLine`: Optional.
+      * The command line (XML contribution in your Studio project). See the default command lines for an example of use
+      * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf" command line is used.
+      * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf-authenticated" command line is used.
     * `url`: Required. The url to use. Full URL with protocol, required
     * `fileName`: Optional. The file name for the pdf. Optional. A name built from the host in the URL is provided by default (`"http://my.site.com/more/and/more/page.html"` => `my-site-com.pdf`).
     * `cookieJar`: Optional. The blob returned by the `WebpageToBlob.Login` operation when accessing pages requiring authentication.
@@ -32,6 +36,10 @@ The plug-in provides the following operations:
   * _Input_: `Document`, the document in which the PDF will be stored
   * _Output_: The `Document` as received in input
   * _Parameters_:
+    * `commandLine`: Optional.
+      * The command line (XML contribution in your Studio project). See the default command lines for an example of use
+      * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf" command line is used.
+      * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf-authenticated" command line is used.
     * `url`: The url to use. Full URL with protocol, required
     * `fileName`: The file name for the pdf. Optional. A name built from the host in the URL is provided by default (`"http://my.site.com/more/and/more/page.html"` => `my-site-com.pdf`).
     * `xpath`: The xpath to use to store the blob. Optional (`file:content` by default)

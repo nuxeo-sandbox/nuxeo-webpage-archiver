@@ -46,6 +46,9 @@ public class WebpageToDocumentOp {
 
     public static final String ID = "WebpageToDocument";
 
+    @Param(name = "commandLine", required = false)
+    protected String commandLine;
+
     @Param(name = "url", required = true)
     protected String url;
 
@@ -61,7 +64,7 @@ public class WebpageToDocumentOp {
     @OperationMethod
     public DocumentModel run(DocumentModel inDoc) throws IOException, CommandNotAvailable {
 
-        WebpageToBlobWork work = new WebpageToBlobWork(url, inDoc.getRepositoryName(), inDoc.getId(), xpath, fileName, cookieJar);
+        WebpageToBlobWork work = new WebpageToBlobWork(commandLine, url, inDoc.getRepositoryName(), inDoc.getId(), xpath, fileName, cookieJar);
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
 

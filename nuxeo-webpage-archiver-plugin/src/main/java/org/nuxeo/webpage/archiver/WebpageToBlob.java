@@ -50,7 +50,7 @@ import org.nuxeo.runtime.api.Framework;
  * <code>--load-media-error-handling ignore</code> and <code>--load-error-handling ignore</code>. Also, launching the
  * command in quiet mode is a requirement (<code>-q</code> option)
  * <p>
- * Also, the commandline can create a valid and complete pdf but still returns an error code. This class does not rely
+ * Also, the commandline can create a valid and complete pdf but still return an error code. This class does not rely
  * on the exitValue returned by wkhtmltopdf. Instead, it checks the resulting pdf.
  * <p>
  * <b>Pages Requiring Authentication<b>
@@ -200,7 +200,7 @@ public class WebpageToBlob {
     /*
      * This one is used only in tests, because as of today (2016-03), you can't dynamically setup login credentials from
      * unit test, when using the CommandLineService and its XML extensions. Well. You can, but it is a lot, a lot of
-     * work. <p> We secure this by checking we are running a test
+     * work. We secure this by checking we are running a test.
      */
     public Blob login(String inCommandLine, Properties inTestProps) throws IOException, NuxeoException,
             CommandNotAvailable {

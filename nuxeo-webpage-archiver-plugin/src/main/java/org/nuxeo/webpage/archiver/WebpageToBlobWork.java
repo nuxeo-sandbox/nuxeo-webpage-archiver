@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.nuxeo.ecm.core.api.Blob;
@@ -58,6 +59,8 @@ public class WebpageToBlobWork extends AbstractWork {
 
     public static final int MAX_ATTEMPTS = 3;
 
+    protected String commandLine;
+
     protected String url;
 
     protected String fileName;
@@ -70,14 +73,15 @@ public class WebpageToBlobWork extends AbstractWork {
         return repoName + ":" + inDocId + ":" + inUrl;
     }
 
-    public WebpageToBlobWork(String inUrl, String repoName, String inDocId, String inXPath, String inFileName, Blob cookieJar) {
+    public WebpageToBlobWork(String inCommandLine, String inUrl, String repoName, String inDocId, String inXPath, String inFileName, Blob inCookieJar) {
         super(computeIdPrefix(repoName, inDocId, inUrl));
         setDocument(repoName, inDocId);
 
+        commandLine = inCommandLine;
         url = inUrl;
         xpath = inXPath;
         fileName = inFileName;
-        cookieJar = cookieJar;
+        cookieJar = inCookieJar;
     }
 
     @Override
@@ -93,8 +97,7 @@ public class WebpageToBlobWork extends AbstractWork {
             try {
                 initSession(); // IN 8.1, USE openSystemSession() instead
                 WebpageToBlob wptopdf = new WebpageToBlob();
-                String commandLine = null;
-                if(cookieJar != null) {
+                if(cookieJar != null && StringUtils.isBlank(commandLine)) {
                     commandLine = "wkhtmlToPdf-authenticated";
                 }
                 pdf = wptopdf.toPdf(commandLine, url, fileName, cookieJar);

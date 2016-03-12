@@ -20,6 +20,7 @@ package org.nuxeo.webpage.archiver;
 
 import java.io.IOException;
 
+import org.apache.commons.lang.StringUtils;
 import org.nuxeo.ecm.automation.core.Constants;
 import org.nuxeo.ecm.automation.core.annotations.Operation;
 import org.nuxeo.ecm.automation.core.annotations.OperationMethod;
@@ -39,10 +40,13 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
  * 
  * @since 7.10
  */
-@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. If the page requests authentication, a previous call to WebpageToBlob.Login must have returned the cookieJar blob.")
+@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. Default commandline contribution is used if a command line is not provided. If the page requests authentication, a previous call to WebpageToBlob.Login must have returned the cookieJar blob.")
 public class WebpageToPdfOp {
 
     public static final String ID = "WebpageToPdf";
+
+    @Param(name = "commandLine", required = false)
+    protected String commandLine;
 
     @Param(name = "url", required = true)
     protected String url;
@@ -56,8 +60,7 @@ public class WebpageToPdfOp {
     @OperationMethod
     public Blob run() throws IOException, CommandNotAvailable, NuxeoException {
 
-        String commandLine = null;
-        if(cookieJar != null) {
+        if (cookieJar != null && StringUtils.isBlank(commandLine)) {
             commandLine = "wkhtmlToPdf-authenticated";
         }
         WebpageToBlob wptopdf = new WebpageToBlob();
