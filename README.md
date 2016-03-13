@@ -7,6 +7,7 @@ If the PDF is then saved in a document, you benefit of all the default features 
 <img src="doc-img/webpage-archiver-example.png">
 
 * [Operations](#operations)
+* [Command Line Contributions](command-line-contributions)
 * [Examples](#examples)
 * [Authentication](#authentication)
 * [Install the Operations in your Studio Project](#install-the-operations-in-your-studio-project)
@@ -24,7 +25,7 @@ The plug-in provides the following operations:
   * _Output_: A blob, the PDF corresponding to the webpage
   * _Parameters_:
     * `commandLine`: Optional.
-      * The command line (XML contribution in your Studio project). See the default command lines for an example of use
+      * The command line (XML contribution in your Studio project). See the default command lines for an example of use. You can declare your own command line, with more or less parameters, depending on the exact rendition you want to have (see [Command Line Contributions](command-line-contributions).
       * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf" command line is used.
       * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf-authenticated" command line is used.
     * `url`: Required. The url to use. Full URL with protocol, required
@@ -37,7 +38,7 @@ The plug-in provides the following operations:
   * _Output_: The `Document` as received in input
   * _Parameters_:
     * `commandLine`: Optional.
-      * The command line (XML contribution in your Studio project). See the default command lines for an example of use
+      * The command line (XML contribution in your Studio project). See the default command lines for an example of use. You can declare your own command line, with more or less parameters, depending on the exact rendition you want to have (see [Command Line Contributions](command-line-contributions).
       * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf" command line is used.
       * If not passed and `cookieJar` is èmpty, the default "wkhtmlToPdf-authenticated" command line is used.
     * `url`: The url to use. Full URL with protocol, required
@@ -52,6 +53,39 @@ The plug-in provides the following operations:
   * _Parameters_:
     * `commandLine`: Required. The command line to use for authentication. See below "Authentication".
   * This operation runs _synchronously_.
+
+### Command Line Contributions
+The plug-in contributes the CommandeLine Service by adding some commands, used by default. See their definition in nuxeo-webpage-archiver-plugin/src/main/resources/OSGI-INF/commandlines.xml.
+
+By default, the command line uses `wkhtmltopdf` with the following switches:
+
+* `-q`, to make a quiet call, with no risk to have problem with the output buffer
+* `--load-media-error-handling ignore` and `--load-error-handling ignore`, to avoid freezing the command line in some complex pages.
+
+You can easily contribute your own, custiom command line, using more and more wkhtmltopdf switches to fine tune the result. There is one variable that you must _always_ declare in your contribution, because it is expected at runtime: `"#{targetFilePath}"`. It must be used as is, as the last parameter, and please keep it quoted.
+
+You could hard-code the URL of the page, but if you keep it as parameter, you then must add the `"#{url}"` variable. Please, double-quote it too to avoid problems running the command line.
+
+Then, if you cutsomize a command line requiring authentication, you must add `--cookie-jar #{cookieJar}`, literally, in your command line.
+
+Last but not least, we stringly recommend using the `-q` parameter.
+
+Here is an example of custom contribution added to the "XML Extension" in a Studio project. It just asks the PDF to be built in `Landscape` mode (instead of the default `Portrait`):
+
+```xml
+<extension
+  target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
+  point="command">
+  <command name="wkhtmlToPdf-Landscape" enabled="true">
+    <commandLine>wkhtmltopdf</commandLine>
+    <parameterString>-q --orientation Landscape --page-size Letter --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
+    <installationDirective>You need to install wkhtmltopdf</installationDirective>
+  </command>
+</extension
+```
+
+You can now pass this "wkhtmlToPdf-Landscape" command to an operation.
+
 
 ### Examples
 
