@@ -5,6 +5,8 @@
 	<extension
 		target="org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent"
 		point="command">
+		
+		<!-- See README: #{cookieJar}, #{url} and #{targetFilePath} MUST be quoted  -->
 
 		<command name="wkhtmlToPdf" enabled="true">
 			<commandLine>wkhtmltopdf</commandLine>
@@ -14,7 +16,7 @@
 
 		<command name="wkhtmlToPdf-authenticated" enabled="true">
 			<commandLine>wkhtmltopdf</commandLine>
-			<parameterString>-q --cookie-jar #{cookieJar} --page-size Letter --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
+			<parameterString>-q --cookie-jar "#{cookieJar}" --page-size Letter --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
 			<installationDirective>You need to install wkhtmltopdf</installationDirective>
 		</command>
 		
@@ -27,7 +29,7 @@
 		-->
 		<command name="wkhtmlToPdf-login-EXAMPLE" enabled="false">
 			<commandLine>wkhtmltopdf</commandLine>
-			<parameterString>-q --cookie-jar #{cookieJar} --post user_name johndoe --post user_pwd 123456 --post Submit doLogin --load-media-error-handling ignore --load-error-handling ignore "http://my.site.com/login" "#{targetFilePath}"</parameterString>
+			<parameterString>-q --cookie-jar "#{cookieJar}" --post user_name johndoe --post user_pwd 123456 --post Submit doLogin --load-media-error-handling ignore --load-error-handling ignore "http://my.site.com/login" "#{targetFilePath}"</parameterString>
 			<installationDirective>You need to install wkhtmltopdf.
 			</installationDirective>
 		</command>

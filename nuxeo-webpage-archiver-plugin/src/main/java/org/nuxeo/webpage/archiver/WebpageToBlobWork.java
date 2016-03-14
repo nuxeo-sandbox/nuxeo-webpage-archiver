@@ -68,6 +68,8 @@ public class WebpageToBlobWork extends AbstractWork {
     protected String xpath;
 
     protected Blob cookieJar;
+    
+    protected int timeout;
 
     protected static String computeIdPrefix(String repoName, String inDocId, String inUrl) {
         return repoName + ":" + inDocId + ":" + inUrl;
@@ -96,7 +98,7 @@ public class WebpageToBlobWork extends AbstractWork {
         for (i = 1; i <= max; ++i) {
             try {
                 initSession(); // IN 8.1, USE openSystemSession() instead
-                WebpageToBlob wptopdf = new WebpageToBlob();
+                WebpageToBlob wptopdf = new WebpageToBlob(timeout);
                 if(cookieJar != null && StringUtils.isBlank(commandLine)) {
                     commandLine = "wkhtmlToPdf-authenticated";
                 }
@@ -163,6 +165,10 @@ public class WebpageToBlobWork extends AbstractWork {
         DocumentEventContext ctx = new DocumentEventContext(session, session.getPrincipal(), doc);
         Event event = ctx.newEvent(WEBPAGE_ARCHIVED_EVENT);
         Framework.getLocalService(EventService.class).fireEvent(event);
+    }
+    
+    public void setTimeout(int newValue) {
+        timeout = newValue;
     }
 
 }

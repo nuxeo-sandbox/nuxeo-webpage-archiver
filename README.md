@@ -31,6 +31,7 @@ The plug-in provides the following operations:
     * `url`: Required. The url to use. Full URL with protocol, required
     * `fileName`: Optional. The file name for the pdf. Optional. A name built from the host in the URL is provided by default (`"http://my.site.com/more/and/more/page.html"` => `my-site-com.pdf`).
     * `cookieJar`: Optional. The blob returned by the `WebpageToBlob.Login` operation when accessing pages requiring authentication.
+    * `timeoutMillisecs`: Optional. Number of milliseconds to wait before forcing wkhtmltopdf to quit. Default value is 30000.
   * This operation runs _synchronously_.
 
 * `Conversion > Webpage to Document` (id `WebpageToDocument`)
@@ -45,6 +46,7 @@ The plug-in provides the following operations:
     * `fileName`: The file name for the pdf. Optional. A name built from the host in the URL is provided by default (`"http://my.site.com/more/and/more/page.html"` => `my-site-com.pdf`).
     * `xpath`: The xpath to use to store the blob. Optional (`file:content` by default)
     * `cookieJar`: Optional. The blob returned by the `WebpageToBlob.Login` operation when accessing pages requiring authentication.
+    * `timeoutMillisecs`: Optional. Number of milliseconds to wait before forcing wkhtmltopdf to quit. Default value is 30000.
   * This operation runs **a**_synchronously_, and returns immediately the same document. It does the extraction/PDF-building in an asynchronous worker, and when the conversion is done, it stores the resulting PDF in the `xpath` field and send the `webpageArchived` event (so you can install a listener for this event and be notified once the PDF was generated and stored in the Document). In the worker, 3 attempts are made to build the pdf in case of failure (timout, other error, ...)
 
 * `Conversion > Webpage to Pdf: Login` (id `WebpageToBlob.Login`)
@@ -52,6 +54,7 @@ The plug-in provides the following operations:
   * _Output_: A blob, the _cookie jar_ to use as parameter of other operations when a accessing pages requring authentication.
   * _Parameters_:
     * `commandLine`: Required. The command line to use for authentication. See below "Authentication".
+    * `timeoutMillisecs`: Optional. Number of milliseconds to wait before forcing wkhtmltopdf to quit. Default value is 30000.
   * This operation runs _synchronously_.
 
 ### Command Line Contributions
@@ -62,11 +65,11 @@ By default, the command line uses `wkhtmltopdf` with the following switches:
 * `-q`, to make a quiet call, with no risk to have problem with the output buffer
 * `--load-media-error-handling ignore` and `--load-error-handling ignore`, to avoid freezing the command line in some complex pages.
 
-You can easily contribute your own, custiom command line, using more and more wkhtmltopdf switches to fine tune the result. There is one variable that you must _always_ declare in your contribution, because it is expected at runtime: `"#{targetFilePath}"`. It must be used as is, as the last parameter, and please keep it quoted.
+You can easily contribute your own, custiom command line, using more and more wkhtmltopdf switches to fine tune the result. There is one variable that you must _always_ declare in your contribution, because it is expected at runtime: `"#{targetFilePath}"`. It must be used as is, as the last parameter, and please _must_ be quoted.
 
-You could hard-code the URL of the page, but if you keep it as parameter, you then must add the `"#{url}"` variable. Please, double-quote it too to avoid problems running the command line.
+You could hard-code the URL of the page, but if you keep it as parameter, you then must add the `"#{url}"` variable. It _must_ be quoted.
 
-Then, if you cutsomize a command line requiring authentication, you must add `--cookie-jar #{cookieJar}`, literally, in your command line.
+Then, if you cutsomize a command line requiring authentication, you must add `--cookie-jar #{cookieJar}"`, literally, in your command line. This one too _must_ be quoted.
 
 Last but not least, we stringly recommend using the `-q` parameter.
 
@@ -93,12 +96,13 @@ _(see below "Install the Operations in your Studio project")_
     
 #### Convert and Download from the User Interface, Synchronously
 
-Say the URL is stored in the `myinfo:url` field of the current document:
+Say the URL is stored in the `myinfo:url` field of the current document. We use a timeout of 10 seconds:
 
     Fetch > Context Document(s)    
     Conversion > Webpage to Pdf
       url: @{Document["myinfo:url"]}
       fileName:
+      timeoutMillisecs: 10000
     User Interface > Download File
 
 #### Asynchronously Convert and Save in the Document

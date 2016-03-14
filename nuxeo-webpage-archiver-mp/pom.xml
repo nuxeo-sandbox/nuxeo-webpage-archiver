@@ -5,7 +5,7 @@
   <parent>
     <groupId>nuxeo-webpage-archiver</groupId>
     <artifactId>nuxeo-webpage-archiver-parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>8.1-SNAPSHOT</version>
   </parent>
   <groupId>nuxeo-webpage-archiver</groupId>
   <artifactId>nuxeo-webpage-archiver-mp</artifactId>

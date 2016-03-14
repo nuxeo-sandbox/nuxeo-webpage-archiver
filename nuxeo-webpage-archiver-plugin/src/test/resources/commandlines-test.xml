@@ -9,12 +9,19 @@
 		<!-- You MUST have set private infos in the test-private.properties file (see README and JavaDoc) -->
 		<command name="wkhtmlToPdf-login-TEST" enabled="true">
 			<commandLine>wkhtmltopdf</commandLine>
-			<parameterString>-q --cookie-jar #{cookieJar} --post #{loginVar} #{loginValue} --post #{pwdVar} #{pwdValue} --post #{submitVar} #{submitValue} "#{url}" "#{targetFilePath}"</parameterString>
+			<parameterString>-q --cookie-jar "#{cookieJar}" --post #{loginVar} #{loginValue} --post #{pwdVar} #{pwdValue} --post #{submitVar} #{submitValue} "#{url}" "#{targetFilePath}"</parameterString>
 			<installationDirective>You need to install wkhtmltopdf.
 			</installationDirective>
 		</command>
 		<!-- (2) Access your page, using the default wkhtmlToPdf-authenticated command -->
 
+		<!--  Test should fail because #{url) is not quoted -->
+		<command name="wkhtmlToPdf-UNQUOTED-PARAMETER" enabled="true">
+			<commandLine>wkhtmltopdf</commandLine>
+			<parameterString>-q #{url} "#{targetFilePath}"</parameterString>
+			<installationDirective>You need to install wkhtmltopdf.
+			</installationDirective>
+		</command>
 	</extension>
 
 </component>

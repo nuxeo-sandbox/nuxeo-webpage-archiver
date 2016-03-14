@@ -21,8 +21,13 @@ package org.nuxeo.webpage.archiver;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,10 +36,12 @@ import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.Blobs;
 import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters;
+import org.nuxeo.ecm.platform.commandline.executor.api.CmdParameters.ParameterValue;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandAvailability;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandLineExecutorService;
 import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
-import org.nuxeo.ecm.platform.commandline.executor.api.ExecResult;
+import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineDescriptor;
+import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorComponent;
 import org.nuxeo.runtime.api.Framework;
 
 /**
@@ -46,8 +53,12 @@ import org.nuxeo.runtime.api.Framework;
  * <code>--load-media-error-handling ignore</code> and <code>--load-error-handling ignore</code>. Also, launching the
  * command in quiet mode is a requirement (<code>-q</code> option)
  * <p>
- * Also, the commandline can create a valid and complete pdf but still return an error code. This class does not rely
- * on the exitValue returned by wkhtmltopdf. Instead, it checks the resulting pdf.
+ * Also, the commandline can create a valid and complete pdf but still return an error code. This class does not rely on
+ * the exitValue returned by wkhtmltopdf. Instead, it checks the resulting pdf.
+ * <p>
+ * As of "today" (Nuxeo 8.1); the Nuxeo CommandLineService does not allow setting timeout if wkhtmltopdf fails and
+ * freezes (which happened during some private tests with big, big HTML pages containing a lot of CSS and some errors).
+ * So we use Apache Common Exec instead
  * <p>
  * <b>Pages Requiring Authentication<b>
  * <p>
@@ -77,8 +88,18 @@ public class WebpageToBlob {
 
     public static final String COMMANDLINE_DEFAULT_wkhtmltopdf_AUTHENTICATED = "wkhtmlToPdf-authenticated";
 
-    public WebpageToBlob() {
+    // 30s timeout by default
+    public static final int TIMEOUT_DEFAULT = 30000;
 
+    protected int timeout = TIMEOUT_DEFAULT;
+
+    public WebpageToBlob() {
+        this(0);
+    }
+
+    public WebpageToBlob(int inTimeout) {
+
+        setTimeout(inTimeout);
     }
 
     /**
@@ -211,12 +232,13 @@ public class WebpageToBlob {
                     "When calling login(), a valid commandline must be passed, the default one does not handle authentification");
         }
 
-        Blob cookieJar = Blobs.createBlobWithExtension(".jar");
-
         CmdParameters params = new CmdParameters();
-        params.addNamedParameter("cookieJar", cookieJar.getFile().getAbsolutePath());
 
         String loginUrl = inTestProps.getProperty("loginUrl");
+        params.addNamedParameter(CommandLineParameters.URL, loginUrl);
+
+        Blob cookieJar = Blobs.createBlobWithExtension(".jar");
+        params.addNamedParameter(CommandLineParameters.COOKIE_JAR, cookieJar.getFile().getAbsolutePath());
 
         params.addNamedParameter("loginVar", inTestProps.getProperty("loginVar"));
         params.addNamedParameter("loginValue", inTestProps.getProperty("loginValue"));
@@ -225,9 +247,8 @@ public class WebpageToBlob {
         params.addNamedParameter("submitVar", inTestProps.getProperty("submitVar"));
         params.addNamedParameter("submitValue", inTestProps.getProperty("submitValue"));
 
-        params.addNamedParameter("url", loginUrl);
-
-        Blob ignorePdf = doRun(inCommandLine, params, loginUrl, null);
+        @SuppressWarnings("unused")
+        Blob ignorePdf = buildCommandLineAndRun(inCommandLine, params, null, true);
 
         return cookieJar;
     }
@@ -250,44 +271,89 @@ public class WebpageToBlob {
 
         CmdParameters params = new CmdParameters();
         if (inCookieJar != null) {
-            params.addNamedParameter("cookieJar", inCookieJar.getFile().getAbsolutePath());
+            params.addNamedParameter(CommandLineParameters.COOKIE_JAR, inCookieJar.getFile().getAbsolutePath());
         }
         if (StringUtils.isNotBlank(inUrl)) {
-            params.addNamedParameter("url", inUrl);
+            params.addNamedParameter(CommandLineParameters.URL, inUrl);
         }
 
-        return doRun(inCommandLine, params, inUrl, inFileName);
+        return buildCommandLineAndRun(inCommandLine, params, inFileName, false);
 
     }
 
-    protected Blob doRun(String inCommandLine, CmdParameters inParams, String inUrl, String inFileName)
-            throws IOException, CommandNotAvailable, NuxeoException {
+    protected Blob buildCommandLineAndRun(String inCommandLine, CmdParameters inParams, String inFileName,
+            boolean inUseAllParams) throws IOException, CommandNotAvailable, NuxeoException {
 
         // Create a temp. File handled by Nuxeo
         Blob resultPdf = Blobs.createBlobWithExtension(".pdf");
 
-        inParams.addNamedParameter("targetFilePath", resultPdf.getFile().getAbsolutePath());
+        // Build the full, resolved command line
+        String resolvedParameterString = CommandLineParameters.buildParameterString(inCommandLine,
+                inParams.getParameter(CommandLineParameters.COOKIE_JAR),
+                inParams.getParameter(CommandLineParameters.URL), resultPdf.getFile().getAbsolutePath());
 
-        CommandLineExecutorService cles = Framework.getService(CommandLineExecutorService.class);
-        ExecResult execResult = cles.execCommand(inCommandLine, inParams);
+        // Mainly during test, we may have uncjecked parameters (safe because everything is hard-coded server side)
+        if (inUseAllParams) {
+            if (!Framework.isTestModeSet()) {
+                throw new NuxeoException("A call to buildCommandLineAndRun(..., true) is for test only.");
+            }
+            Map<String, ParameterValue> allParams = inParams.getParameters();
+            String key, value;
+            for (Entry<String, ParameterValue> entry : allParams.entrySet()) {
+                key = entry.getKey();
+                value = entry.getValue().getValue();
+                if (!CommandLineParameters.isHandledParameter(key)) {
+                    resolvedParameterString = StringUtils.replace(resolvedParameterString, "#{" + key + "}", value);
+                }
+            }
+        }
 
-        // WARNING
-        // wkhtmltopdf can return a non zero code while the execution went totally OK and we
-        // have a valid pdf. The problem is that the CommandLineExecutorService assumes a
-        // non-zero return code is an error => we must handle the thing by ourselves, basically
-        // just checking if we do have a comparison file created by wkhtmltopdf
-        // *BUT* still, maybe it can happen a real error is returned and the pdf is invalid. So
-        // we just check the size, but maybe we could use PDFBox to check the pdf
+        // Get the exact command line and build the line
+        CommandLineDescriptor desc = CommandLineExecutorComponent.getCommandDescriptor(inCommandLine);
+        String line = desc.getCommand() + " " + resolvedParameterString;
+
+        // Run the thing
+        Exception exception = null;
+
+        CommandLine cmdLine = CommandLine.parse(line);
+        DefaultExecutor executor = new DefaultExecutor();
+        ExecuteWatchdog watchdog = new ExecuteWatchdog(timeout);
+        // We don't want a check on exit values, because a PDF can still be created with errors
+        // (can't get a font, ...)
+        executor.setExitValues(null);
+        executor.setWatchdog(watchdog);
+        int exitValue = 0;
+        try {
+            exitValue = executor.execute(cmdLine);
+        } catch (IOException e) {
+            exception = e;
+        }
+
+        // Even if we had no error catched, we must check if the pdf is valid.
+        // Exit value may be 1, or non zero while the pdf was created. But maybe
+        // a font could not be correctly rendered, etc. Let's check if we have
+        // something in the pdf and it looks valid
         if (!pdfLooksValid(resultPdf.getFile())) {
-            throw new NuxeoException("Failed to execute the command <" + COMMANDLINE_DEFAULT_wkhtmltopdf
-                    + ">. Final command [ " + execResult.getCommandLine() + " ] returned with error "
-                    + execResult.getReturnCode(), execResult.getError());
+            resultPdf = null;
+            String msg = "Failed to execute the command line [" + cmdLine.toString()
+                    + " ]. No valid PDF generated. exitValue: " + exitValue;
+
+            if (exitValue == 143) { // On Linux: Timeout, wkhtmltopdf was SIGTERM
+                msg += " (time out reached. The timeout was " + timeout + "ms)";
+            }
+            if (exception == null) {
+                throw new NuxeoException(msg);
+            } else {
+                throw new NuxeoException(msg, exception);
+            }
         }
 
         resultPdf.setMimeType("application/pdf");
-        if (StringUtils.isBlank(inFileName) && StringUtils.isNotBlank(inUrl)) {
+        String url = inParams.getParameter(CommandLineParameters.URL);
+        // Url parameter can be blank (hard coded url in the command line XML for example)
+        if (StringUtils.isBlank(inFileName) && StringUtils.isNotBlank(url)) {
             try {
-                URL urlObj = new URL(inUrl);
+                URL urlObj = new URL(url);
                 inFileName = StringUtils.replace(urlObj.getHost(), ".", "-") + ".pdf";
             } finally {
                 // Nothing. Default name has been set by nuxeo
@@ -329,6 +395,10 @@ public class WebpageToBlob {
         }
 
         return valid;
+    }
+
+    public void setTimeout(int newValue) {
+        timeout = newValue < 1 ? TIMEOUT_DEFAULT : newValue;
     }
 
 }

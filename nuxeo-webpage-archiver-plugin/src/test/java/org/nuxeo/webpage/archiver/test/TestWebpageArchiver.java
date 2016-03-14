@@ -35,11 +35,11 @@ import org.nuxeo.common.utils.FileUtils;
 import org.nuxeo.ecm.automation.AutomationService;
 import org.nuxeo.ecm.automation.OperationChain;
 import org.nuxeo.ecm.automation.OperationContext;
-import org.nuxeo.ecm.automation.test.AutomationFeature;
 import org.nuxeo.ecm.automation.test.EmbeddedAutomationServerFeature;
 import org.nuxeo.ecm.platform.test.PlatformFeature;
 import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
+import org.nuxeo.ecm.core.api.NuxeoException;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
@@ -95,6 +95,8 @@ public class TestWebpageArchiver {
     protected static final String DEFAULT_TEST_URL = "https://en.wikipedia.org/wiki/Unit_testing";
     
     protected static final String DEFAULT_TEST_URL_TEXT_CHECK = "unit testing";
+    
+    protected static final String COMMAND_WITH_UNQUOTED_PARAM = "wkhtmlToPdf-UNQUOTED-PARAMETER";
 
     Properties privateProps = null;
 
@@ -133,8 +135,8 @@ public class TestWebpageArchiver {
         Assume.assumeTrue("wkhtmltopdf is not available, skipping test", WebpageToBlob.isAvailable());
 
         Blob result = null;
-        WebpageToBlob wgtopdf = new WebpageToBlob();
-        result = wgtopdf.toPdf(null, DEFAULT_TEST_URL, null);
+        WebpageToBlob wptopdf = new WebpageToBlob();
+        result = wptopdf.toPdf(null, DEFAULT_TEST_URL, null);
         assertNotNull(result);
 
         assertTrue(Utils.hasText(result, DEFAULT_TEST_URL_TEXT_CHECK));
@@ -150,13 +152,13 @@ public class TestWebpageArchiver {
         String textToCheck = privateProps.getProperty("textToCheck");
 
         Blob result = null;
-        WebpageToBlob wgtopdf = new WebpageToBlob();
+        WebpageToBlob wptopdf = new WebpageToBlob();
         // The contrib hard-codes the credentials, URL, etc.
-        Blob cookieJar = wgtopdf.login("wkhtmlToPdf-login-TEST", privateProps);
+        Blob cookieJar = wptopdf.login("wkhtmlToPdf-login-TEST", privateProps);
         assertNotNull(cookieJar);
 
         // Using a default contribution (no need to hard code things here)
-        result = wgtopdf.toPdf("wkhtmlToPdf-authenticated", testPageUrl, null, cookieJar);
+        result = wptopdf.toPdf("wkhtmlToPdf-authenticated", testPageUrl, null, cookieJar);
         assertNotNull(result);
 
         assertTrue(Utils.hasText(result, textToCheck));
@@ -175,6 +177,42 @@ public class TestWebpageArchiver {
         assertNotNull(result);
         assertTrue(Utils.hasText(result, DEFAULT_TEST_URL_TEXT_CHECK));
         assertEquals("myfile.pdf", result.getFilename());
+        
+    }
+    
+    @Test
+    public void testShouldFailWithUnquotedParameter() throws Exception {
+        
+        Assume.assumeTrue("wkhtmltopdf is not available, skipping test", WebpageToBlob.isAvailable());
+
+        Blob result = null;
+        WebpageToBlob wptopdf = new WebpageToBlob();
+        try {
+            result = wptopdf.toPdf(COMMAND_WITH_UNQUOTED_PARAM, DEFAULT_TEST_URL, null);
+            assertTrue("Should have failed", false);
+        } catch(Exception e) {
+            assertTrue(e instanceof NuxeoException);
+            assertTrue(e.getMessage().indexOf("has unquoted parameter") > -1);
+        }
+        assertNull(result);
+        
+    }
+    
+    @Test
+    public void testShouldFailForTimeout() throws Exception {
+        
+        Assume.assumeTrue("wkhtmltopdf is not available, skipping test", WebpageToBlob.isAvailable());
+
+        Blob result = null;
+        WebpageToBlob wptopdf = new WebpageToBlob();
+        wptopdf.setTimeout(2000);
+        try {
+            result = wptopdf.toPdf(null, "http://nuxeo.com", null);
+            assertTrue("Should have failed", false);
+        } catch (Exception e) {
+            //
+        }
+        assertNull(result);
         
     }
 

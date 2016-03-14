@@ -31,21 +31,29 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
 /**
  * Runs the commandLine which must declare everything needed to authenticated (see README). Returns a blob to use for
  * further calls to the same site, accessing pages requesting authentication."
+ * <p>
+ * If the command takes more than timeoutMillisecs, it is forced to terminate. Default value is 30000 ms
  * 
  * @since 7.10
  */
-@Operation(id = WebpageToBlobLoginOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to PDF: Login", description = "Run the commandLine which must declare everything needed to authenticated (see README). Returns a blob to use for further calls to the same site, accessing pages requesting authentication.")
+@Operation(id = WebpageToBlobLoginOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to PDF: Login", description = "Run the commandLine which must declare everything needed to authenticated (see README). Returns a blob to use for further calls to the same site, accessing pages requesting authentication. Default timeout is 30000ms.")
 public class WebpageToBlobLoginOp {
 
     public static final String ID = "WebpageToBlob.Login";
 
     @Param(name = "commandLine", required = true)
     protected String commandLine;
+    
+    @Param(name = "timeoutMillisecs", required = false)
+    protected Long timeoutMillisecs;
 
     @OperationMethod
     public Blob run() throws IOException, CommandNotAvailable, NuxeoException {
 
         WebpageToBlob wptopdf = new WebpageToBlob();
+        if(timeoutMillisecs != null && timeoutMillisecs.longValue() != 0) {
+            wptopdf.setTimeout(timeoutMillisecs.intValue());
+        }
         return wptopdf.login(commandLine);
     }
 

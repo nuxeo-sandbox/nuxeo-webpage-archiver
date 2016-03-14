@@ -37,10 +37,12 @@ import org.nuxeo.ecm.platform.commandline.executor.api.CommandNotAvailable;
  * to pass in the <code>cookieJar</code> parameter.
  * <p>
  * Please, see the comments of {@link WebpageToBlob} for details about the usage of the wkhtmltopdf command line
+ * <p>
+ * If the command takes more than timeoutMillisecs, it is forced to terminate. Default value is 30000 ms
  * 
  * @since 7.10
  */
-@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. Default commandline contribution is used if a command line is not provided. If the page requests authentication, a previous call to WebpageToBlob.Login must have returned the cookieJar blob.")
+@Operation(id = WebpageToPdfOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Pdf", description = "Read the distant web page and save it as a pdf. Default commandline contribution is used if a command line is not provided. Default timeout is 30000ms. If the page requests authentication, a previous call to WebpageToBlob.Login must have returned the cookieJar blob.")
 public class WebpageToPdfOp {
 
     public static final String ID = "WebpageToPdf";
@@ -56,6 +58,9 @@ public class WebpageToPdfOp {
 
     @Param(name = "cookieJar", required = false)
     protected Blob cookieJar;
+    
+    @Param(name = "timeout", required = false)
+    protected Long timeout;
 
     @OperationMethod
     public Blob run() throws IOException, CommandNotAvailable, NuxeoException {
@@ -64,6 +69,9 @@ public class WebpageToPdfOp {
             commandLine = "wkhtmlToPdf-authenticated";
         }
         WebpageToBlob wptopdf = new WebpageToBlob();
+        if(timeout != null && timeout.longValue() != 0) {
+            wptopdf.setTimeout(timeout.intValue());
+        }
         return wptopdf.toPdf(commandLine, url, fileName, cookieJar);
     }
 

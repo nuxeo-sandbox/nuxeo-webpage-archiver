@@ -38,10 +38,12 @@ import org.nuxeo.runtime.api.Framework;
  * <p>
  * If access to <code>url</code> must be authenticated, a previous call to WebpageToBlob.Login must have returned Blob,
  * to pass in the <code>cookieJar</code> parameter.
+ * <p>
+ * If the command takes more than timeoutMillisecs, it is forced to terminate. Default value is 30000 ms
  * 
  * @since 7.10
  */
-@Operation(id = WebpageToDocumentOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Document", description = "Read the distant web page and save it as a pdf in the xpath field of input document. This is always an asynchronous operation running in a worker. When it is done, it fires the webpageArchived event. Returns the input document (unchanged)")
+@Operation(id = WebpageToDocumentOp.ID, category = Constants.CAT_CONVERSION, label = "Webpage to Document", description = "Read the distant web page and save it as a pdf in the xpath field of input document. Default timeout is 30000ms. This is always an asynchronous operation running in a worker. When it is done, it fires the webpageArchived event. Returns the input document (unchanged)")
 public class WebpageToDocumentOp {
 
     public static final String ID = "WebpageToDocument";
@@ -60,11 +62,17 @@ public class WebpageToDocumentOp {
 
     @Param(name = "cookieJar", required = false)
     protected Blob cookieJar;
+    
+    @Param(name = "timeout", required = false)
+    protected Long timeout;
 
     @OperationMethod
     public DocumentModel run(DocumentModel inDoc) throws IOException, CommandNotAvailable {
 
         WebpageToBlobWork work = new WebpageToBlobWork(commandLine, url, inDoc.getRepositoryName(), inDoc.getId(), xpath, fileName, cookieJar);
+        if(timeout != null && timeout.longValue() != 0) {
+            work.setTimeout(timeout.intValue());
+        }
         WorkManager workManager = Framework.getLocalService(WorkManager.class);
         workManager.schedule(work, Scheduling.IF_NOT_RUNNING_OR_SCHEDULED);
 
