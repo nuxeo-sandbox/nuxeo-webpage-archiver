@@ -116,6 +116,8 @@ public class TestWebpageArchiver {
             privateProps = new Properties();
             privateProps.load(fileInput);
 
+        } catch(Exception e) {
+            // Ignore
         } finally {
             if (fileInput != null) {
                 fileInput.close();
