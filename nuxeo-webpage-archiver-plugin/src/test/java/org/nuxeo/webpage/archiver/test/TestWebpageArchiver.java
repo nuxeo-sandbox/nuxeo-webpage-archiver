@@ -170,6 +170,8 @@ public class TestWebpageArchiver {
     @Test
     public void testOperation_noAuthentification() throws Exception {
         
+        Assume.assumeTrue("wkhtmltopdf is not available, skipping test", WebpageToBlob.isAvailable());
+        
         OperationContext ctx = new OperationContext();
         // No input nor session needed here
         OperationChain chain = new OperationChain("TestWPTPDF-1");
