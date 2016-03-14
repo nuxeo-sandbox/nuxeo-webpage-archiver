@@ -57,7 +57,7 @@ import org.nuxeo.runtime.api.Framework;
  * <li>Use this cookie jar in further authenticated calls</li>
  * </ul>
  * To handle this, which requires user and password to be exchanged, you must declare as many commandLine XML as you
- * need, o user/pwd are saved server-side, and pass the command lien name to the {@link login} method. This way no
+ * need, or user/pwd are saved server-side, and pass the command line name to the {@link login} method. This way no
  * exchange with a browser for example. See {@link login} for more information
  * <p>
  * <b>NOTICE</b>
@@ -130,7 +130,7 @@ public class WebpageToBlob {
      * @throws IOException
      * @throws CommandNotAvailable
      * @throws NuxeoException
-     * @since TODO
+     * @since 7.10
      */
     public Blob toPdf(String inCommandLine, String inUrl, String inFileName, Blob inCookieJar) throws IOException,
             CommandNotAvailable, NuxeoException {
