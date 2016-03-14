@@ -56,9 +56,18 @@ import org.nuxeo.runtime.api.Framework;
  * Also, the commandline can create a valid and complete pdf but still return an error code. This class does not rely on
  * the exitValue returned by wkhtmltopdf. Instead, it checks the resulting pdf.
  * <p>
+ * <b>Using Apache Common Exec<b>
+ * <p>
  * As of "today" (Nuxeo 8.1); the Nuxeo CommandLineService does not allow setting timeout if wkhtmltopdf fails and
  * freezes (which happened during some private tests with big, big HTML pages containing a lot of CSS and some errors).
- * So we use Apache Common Exec instead
+ * So we use Apache Common Exec instead.
+ * <p>
+ * Notice #1: We still use the CommandLineExecutorService to declare and handle XML contributions, because it is is very
+ * convenient and contains everything we need. No need to re-create a service doing basically the same just to add a
+ * timeout.
+ * <p>
+ * Notice #2: And it is the reason why we created the {@link CommandLineParameters} class: So we handle security by
+ * forcing some parameters to be quoted.
  * <p>
  * <b>Pages Requiring Authentication<b>
  * <p>
