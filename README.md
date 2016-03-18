@@ -73,7 +73,7 @@ Then, if you cutsomize a command line requiring authentication, you must add `--
 
 Last but not least, we stringly recommend using the `-q` parameter.
 
-Here is an example of custom contribution added to the "XML Extension" in a Studio project. It just asks the PDF to be built in `Landscape` mode (instead of the default `Portrait`):
+Here is an example of custom contribution added to the "XML Extension" in a Studio project. It just asks the PDF to be built in `Landscape` mode (instead of the default `Portrait`) and `Letter` size (instead of the default value, `À4`):
 
 ```xml
 <extension

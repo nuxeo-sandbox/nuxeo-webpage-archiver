@@ -10,13 +10,13 @@
 
 		<command name="wkhtmlToPdf" enabled="true">
 			<commandLine>wkhtmltopdf</commandLine>
-			<parameterString>-q --page-size Letter --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
+			<parameterString>-q --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
 			<installationDirective>You need to install wkhtmltopdf</installationDirective>
 		</command>
 
 		<command name="wkhtmlToPdf-authenticated" enabled="true">
 			<commandLine>wkhtmltopdf</commandLine>
-			<parameterString>-q --cookie-jar "#{cookieJar}" --page-size Letter --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
+			<parameterString>-q --cookie-jar "#{cookieJar}" --load-media-error-handling ignore --load-error-handling ignore "#{url}" "#{targetFilePath}"</parameterString>
 			<installationDirective>You need to install wkhtmltopdf</installationDirective>
 		</command>
 		
