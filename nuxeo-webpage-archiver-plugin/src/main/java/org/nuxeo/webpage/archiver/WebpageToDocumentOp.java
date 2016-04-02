@@ -62,15 +62,16 @@ public class WebpageToDocumentOp {
 
     @Param(name = "cookieJar", required = false)
     protected Blob cookieJar;
-    
+
     @Param(name = "timeout", required = false)
     protected Long timeout;
 
     @OperationMethod
     public DocumentModel run(DocumentModel inDoc) throws IOException, CommandNotAvailable {
 
-        WebpageToBlobWork work = new WebpageToBlobWork(commandLine, url, inDoc.getRepositoryName(), inDoc.getId(), xpath, fileName, cookieJar);
-        if(timeout != null && timeout.longValue() != 0) {
+        WebpageToBlobWork work = new WebpageToBlobWork(commandLine, url, inDoc.getRepositoryName(), inDoc.getId(),
+                xpath, fileName, cookieJar);
+        if (timeout != null && timeout.longValue() != 0) {
             work.setTimeout(timeout.intValue());
         }
         WorkManager workManager = Framework.getLocalService(WorkManager.class);

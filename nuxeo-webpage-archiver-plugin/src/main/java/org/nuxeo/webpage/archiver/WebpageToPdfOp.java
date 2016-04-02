@@ -58,7 +58,7 @@ public class WebpageToPdfOp {
 
     @Param(name = "cookieJar", required = false)
     protected Blob cookieJar;
-    
+
     @Param(name = "timeout", required = false)
     protected Long timeout;
 
@@ -69,7 +69,7 @@ public class WebpageToPdfOp {
             commandLine = "wkhtmlToPdf-authenticated";
         }
         WebpageToBlob wptopdf = new WebpageToBlob();
-        if(timeout != null && timeout.longValue() != 0) {
+        if (timeout != null && timeout.longValue() != 0) {
             wptopdf.setTimeout(timeout.intValue());
         }
         return wptopdf.toPdf(commandLine, url, fileName, cookieJar);

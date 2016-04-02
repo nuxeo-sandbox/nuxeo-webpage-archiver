@@ -30,10 +30,10 @@ import org.nuxeo.ecm.platform.commandline.executor.service.CommandLineExecutorCo
 /**
  * Centralize handling and check of parameters.
  * <p>
- * Mainly because we are using Apache Common Exec instead of Nuxeo COmmandLineExecutorService to perform the commandline
+ * Mainly because we are using Apache Common Exec instead of Nuxeo CommandLineExecutorService to perform the commandline
  * (waiting for a timeout to be implemented in the Service)
  * <p>
- * BAsically, we ensure the parameters are quoted, so we avoid security problems when the URL is set from a client.
+ * Basically, we ensure the parameters are quoted, so we avoid security problems when the URL is set from a client.
  * 
  * @since 7.10
  */

@@ -43,7 +43,7 @@ public class WebpageToBlobLoginOp {
 
     @Param(name = "commandLine", required = true)
     protected String commandLine;
-    
+
     @Param(name = "timeoutMillisecs", required = false)
     protected Long timeoutMillisecs;
 
@@ -51,7 +51,7 @@ public class WebpageToBlobLoginOp {
     public Blob run() throws IOException, CommandNotAvailable, NuxeoException {
 
         WebpageToBlob wptopdf = new WebpageToBlob();
-        if(timeoutMillisecs != null && timeoutMillisecs.longValue() != 0) {
+        if (timeoutMillisecs != null && timeoutMillisecs.longValue() != 0) {
             wptopdf.setTimeout(timeoutMillisecs.intValue());
         }
         return wptopdf.login(commandLine);
