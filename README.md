@@ -16,6 +16,10 @@ If the PDF is then saved in a document, you benefit of all the default features 
 * [License](#license)
 * [About Nuxeo](#about-nuxeo)
 
+### Quality Assurance
+QA build status: ![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Sandbox/sandbox_nuxeo-webpage-archiver-master)
+
+[QA Last Build Page](http://qa.nuxeo.org/jenkins/job/Sandbox/job/sandbox_nuxeo-webpage-archiver-master/lastBuild/nuxeo-webpage-archiver$nuxeo-webpage-archiver-mp/) of the Nuxeo Package, to get the .zip package and install it on your server (no need to build it).
 
 ### Operations
 The plug-in provides the following operations:
