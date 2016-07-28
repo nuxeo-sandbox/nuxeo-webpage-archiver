@@ -5,11 +5,10 @@
   <parent>
     <groupId>nuxeo-webpage-archiver</groupId>
     <artifactId>nuxeo-webpage-archiver-parent</artifactId>
-    <version>8.2-SNAPSHOT</version>
+    <version>8.3-SNAPSHOT</version>
   </parent>
   <groupId>nuxeo-webpage-archiver</groupId>
   <artifactId>nuxeo-webpage-archiver-plugin</artifactId>
-  <version>8.2-SNAPSHOT</version>
   <name>nuxeo-webpage-archiver-plugin</name>
   <description/>
   <dependencies>

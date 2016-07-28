@@ -48,13 +48,18 @@
     <copy todir="${outdir}/nxr/lib" overwrite="true">
       <artifact:set>
         <includes>
-          <artifact groupId="!org.nuxeo*" scope="!test" />
-          <artifact groupId="org.nuxeo.lib*" scope="!test" />
+          <artifact groupId="!org.nuxeo*" />
+          <artifact groupId="org.nuxeo.lib*" />
         </includes>
         <excludes>
-          <artifact groupId="org.nuxeo*" />
+          <artifact scope="test" />
+          <artifact scope="provided" />
+          <artifact type="pom" />
           <artifact groupId="nuxeo-studio" />
+          <!-- Filter out your artifacts using their groupId for instance -->
           <artifact groupId="nuxeo-webpage-archiver*" />
+          <!-- Fixlibraries coming without asking anything -->
+          <artifact artifactId="mongo-java-driver*"/>
         </excludes>
       </artifact:set>
     </copy>
