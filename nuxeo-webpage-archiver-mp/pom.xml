@@ -5,7 +5,7 @@
   <parent>
     <groupId>nuxeo-webpage-archiver</groupId>
     <artifactId>nuxeo-webpage-archiver-parent</artifactId>
-    <version>8.3-SNAPSHOT</version>
+    <version>8.10-SNAPSHOT</version>
   </parent>
   <groupId>nuxeo-webpage-archiver</groupId>
   <artifactId>nuxeo-webpage-archiver-mp</artifactId>
@@ -28,7 +28,7 @@
     <!-- Base distribution(s) for the MP -->
     <dependency>
       <groupId>org.nuxeo.ecm.distribution</groupId>
-      <artifactId>nuxeo-distribution-cap</artifactId>
+      <artifactId>nuxeo-nxr-server</artifactId>
       <!-- <artifactId>nuxeo-distribution-coreserver</artifactId> -->
       <!-- <artifactId>nuxeo-distribution-dm</artifactId> -->
       <!-- <artifactId>nuxeo-distribution-dam</artifactId> -->
