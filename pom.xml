@@ -5,11 +5,11 @@
   <parent>
     <groupId>org.nuxeo</groupId>
     <artifactId>nuxeo-addons-parent</artifactId>
-    <version>8.10</version>
+    <version>9.10</version>
   </parent>
   <groupId>nuxeo-webpage-archiver</groupId>
   <artifactId>nuxeo-webpage-archiver-parent</artifactId>
-  <version>8.10-SNAPSHOT</version>
+  <version>9.10-SNAPSHOT</version>
   <name>Parent Project for Nuxeo webpage-archiver</name>
   <packaging>pom</packaging>
   <description />
@@ -18,8 +18,8 @@
     <module>nuxeo-webpage-archiver-mp</module>
   </modules>
   <properties>
-    <nuxeo.webpage-archiver.version>8.10-SNAPSHOT</nuxeo.webpage-archiver.version>
-    <nuxeo.distribution.version>8.10</nuxeo.distribution.version>
+    <nuxeo.webpage-archiver.version>9.10-SNAPSHOT</nuxeo.webpage-archiver.version>
+    <nuxeo.distribution.version>9.10</nuxeo.distribution.version>
   </properties>
   <dependencyManagement>
     <dependencies>
