@@ -1,8 +1,8 @@
 <!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
 <package type="addon" name="nuxeo-webpage-archiver" version="@VERSION@">
-  <title>Nuxeo Remote URL Converter Nuxeo Package</title>
+  <title>Nuxeo Webpage Archiver Package</title>
   <description></description>
-  <home-page>http://doc.nuxeo.com/</home-page>
+  <home-page>https://github.com/nuxeo-sandbox/nuxeo-webpage-archiver</home-page>
   <vendor>Nuxeo</vendor>
   <installer restart="true" />
   <uninstaller restart="true" />
