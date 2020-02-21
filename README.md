@@ -7,7 +7,7 @@ If the PDF is then saved in a document, you benefit of all the default features 
 <img src="doc-img/webpage-archiver-example.png">
 
 * [Operations](#operations)
-* [Command Line Contributions](command-line-contributions)
+* [Command Line Contributions](#command-line-contributions)
 * [Examples](#examples)
 * [Authentication](#authentication)
 * [Install the Operations in your Studio Project](#install-the-operations-in-your-studio-project)
