@@ -18,8 +18,8 @@
     <module>nuxeo-webpage-archiver-mp</module>
   </modules>
   <properties>
-    <nuxeo.webpage-archiver.version>9.10-SNAPSHOT</nuxeo.webpage-archiver.version>
-    <nuxeo.distribution.version>9.10</nuxeo.distribution.version>
+    <nuxeo.webpage-archiver.version>10.10-SNAPSHOT</nuxeo.webpage-archiver.version>
+    <nuxeo.distribution.version>10.10</nuxeo.distribution.version>
   </properties>
   <dependencyManagement>
     <dependencies>
