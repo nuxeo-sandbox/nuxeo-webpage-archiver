@@ -1,5 +1,7 @@
 # nuxeo-webpage-archiver
 
+<a href='https://qa.nuxeo.org/jenkins/job/Sandbox/job/sandbox_nuxeo-webpage-archiver-master/1362/'><img src='https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Sandbox%2Fsandbox_nuxeo-webpage-archiver-master&build=1362'></a>
+
 Given a URL to a web page, the plugin builds a pdf from this webpage.
 
 If the PDF is then saved in a document, you benefit of all the default features of Nuxeo: Full text extraction, Thumbnail, Preview... For example, the following screenshot shows the thumbnail and the PDF preview after building a pdf from the URL "https://en.wikipedia.org/wiki/Status_Quo_(band)":
@@ -15,11 +17,6 @@ If the PDF is then saved in a document, you benefit of all the default features 
 * [Build](#build)
 * [License](#license)
 * [About Nuxeo](#about-nuxeo)
-
-### Quality Assurance
-QA build status: ![Build Status](https://qa.nuxeo.org/jenkins/buildStatus/icon?job=Sandbox/sandbox_nuxeo-webpage-archiver-master)
-
-[QA Last Build Page](http://qa.nuxeo.org/jenkins/job/Sandbox/job/sandbox_nuxeo-webpage-archiver-master/lastBuild/nuxeo-webpage-archiver$nuxeo-webpage-archiver-mp/) of the Nuxeo Package, to get the .zip package and install it on your server (no need to build it).
 
 ### Operations
 The plug-in provides the following operations:
