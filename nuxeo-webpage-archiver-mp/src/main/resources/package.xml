@@ -1,7 +1,7 @@
 <!-- See documentation at http://doc.nuxeo.com/x/HgIz -->
 <package type="addon" name="nuxeo-webpage-archiver" version="@VERSION@">
   <title>Nuxeo Webpage Archiver Package</title>
-  <description></description>
+  <description>Given a URL to a web page, the plugin builds a PDF document from the webpage.</description>
   <home-page>https://github.com/nuxeo-sandbox/nuxeo-webpage-archiver</home-page>
   <vendor>Nuxeo</vendor>
   <installer restart="true" />
