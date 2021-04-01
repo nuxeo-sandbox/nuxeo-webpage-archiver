@@ -94,12 +94,12 @@ You can now pass this "wkhtmlToPdf-Landscape" command to an operation.
 ### Examples
 
 _(see below "Install the Operations in your Studio project")_
-    
+
 #### Convert and Download from the User Interface, Synchronously
 
 Say the URL is stored in the `myinfo:url` field of the current document. We use a timeout of 10 seconds:
 
-    Fetch > Context Document(s)    
+    Fetch > Context Document(s)
     Conversion > Webpage to Pdf
       url: @{Document["myinfo:url"]}
       fileName:
@@ -212,12 +212,12 @@ To do get the JSON definition, first install the plug-in in your server. Once st
 ### Build
 
     cd /path/to/nuxeo-webpage-archiver
-    mvn clean install    
+    mvn clean install
 
 *NOTE* As of today, unit test are OK in Eclipse, not in Maven. So better run:
 
     cd /path/to/nuxeo-webpage-archiver
-    mvn clean install -DskipTests 
+    mvn clean install -DskipTests
 
 
 ## License
